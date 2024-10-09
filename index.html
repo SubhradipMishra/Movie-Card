@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .card {
+            height: 300px;
+            width: 250px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.8);
+            color: black;
+            border-radius: 30px;
+            padding: 10px;
+            text-align: center;
+            margin: 10px;
+        }
+        #movieCards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .star {
+            color: gold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="movieCards"></div>
+
+</body>
+<script>
+    const xhr = new XMLHttpRequest(); 
+    xhr.open('GET', "https://dummyapi.online/api/movies", true);
+    xhr.responseType = "json";
+    
+    xhr.onload = () => {
+        const movies = xhr.response;
+        const cont = document.getElementById("movieCards");
+        
+        movies.slice(0, 5).forEach(movie => {
+            const ratingOutOf5 = (movie.rating / 2).toFixed(1);
+            const stars = Math.floor(ratingOutOf5);
+            const halfStar = ratingOutOf5 - stars;
+            let starDisplay = '';
+
+            for (let i = 0; i < 5; i++) {
+                if (i < stars) {
+                    starDisplay += '⭐';
+                } else if (i === stars && halfStar > 0) {
+                    starDisplay += '<img src="star.webp" alt="half star" width="20px" />';
+                } else {
+                    starDisplay += '☆';
+                }
+            }
+
+            const card = document.createElement('div'); 
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>Movie Name: ${movie.title}</h3>
+                <a href="${movie.imdb_url}">Watch Now</a>
+                <h4>Rating: ${ratingOutOf5}/5</h4>
+                <div class="star">${starDisplay}</div>
+            `;
+
+            cont.appendChild(card);
+        });
+    };
+
+    xhr.onerror = () => {
+        console.error('Network error occurred');
+    };
+
+    xhr.send(); 
+</script>
+</html>
